@@ -1,6 +1,7 @@
 package com.zzg.mybatis.generator;
 
 import com.zzg.mybatis.generator.controller.MainUIController;
+import com.zzg.mybatis.generator.controller.MekMainUIController;
 import com.zzg.mybatis.generator.util.ConfigHelper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +36,7 @@ public class MainUI extends Application {
 		primaryStage.getIcons().add(imageIcon);
 		primaryStage.show();
 
-		MainUIController controller = fxmlLoader.getController();
+		MekMainUIController controller = fxmlLoader.getController();
 		controller.setPrimaryStage(primaryStage);
 	}
 
