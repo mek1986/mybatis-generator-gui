@@ -118,7 +118,7 @@ public class MyFileCreator {
             for (Method method : methods) {
                 JSONObject m = new JSONObject();
                 m.put("name", method.getName());
-                m.put("ret", method.getReturnType() == null ? "void" : method.getReturnType().getFullyQualifiedNameWithoutTypeParameters());
+                m.put("ret", method.getReturnType() == null ? "void" : method.getReturnType().getShortNameWithoutTypeArguments());
                 m.put("params", method.getParameters());
                 m.put("doc", method.getJavaDocLines());
                 m.put("ano", method.getAnnotations());
