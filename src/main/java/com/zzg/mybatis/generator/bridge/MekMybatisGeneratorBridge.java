@@ -8,6 +8,7 @@ import com.zzg.mybatis.generator.util.ConfigHelper;
 import com.zzg.mybatis.generator.util.DbUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.api.Plugin;
 import org.mybatis.generator.api.ProgressCallback;
 import org.mybatis.generator.api.ShellCallback;
 import org.mybatis.generator.config.*;
@@ -27,7 +28,7 @@ import java.util.Set;
  * <p>
  * Created by Owen on 6/30/16.
  */
-public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
+public class MekMybatisGeneratorBridge {
 
     private static final Logger _LOG = LoggerFactory.getLogger(MekMybatisGeneratorBridge.class);
 
@@ -41,12 +42,32 @@ public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
 
     private List<ColumnOverride> columnOverrides;
 
+    public Context getContext() {
+        return context;
+    }
+
+    private Context context;
+
+    public MyBatisGenerator getMyBatisGenerator() {
+        return myBatisGenerator;
+    }
+
+    private MyBatisGenerator myBatisGenerator;
+
     public MekMybatisGeneratorBridge() {
+    }
+
+    public void setGeneratorConfig(GeneratorConfig generatorConfig) {
+        this.generatorConfig = generatorConfig;
+    }
+
+    public void setDatabaseConfig(DatabaseConfig databaseConfig) {
+        this.selectedDatabaseConfig = databaseConfig;
     }
 
     public void generate() throws Exception {
         Configuration configuration = new Configuration();
-        Context context = new Context(ModelType.CONDITIONAL);
+        context = new Context(ModelType.CONDITIONAL);
         configuration.addContext(context);
 
         context.addProperty("javaFileEncoding", "UTF-8");
@@ -151,13 +172,13 @@ public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
         daoConfig.setTargetPackage(generatorConfig.getDaoPackage());
         daoConfig.setTargetProject(generatorConfig.getProjectFolder() + "/" + generatorConfig.getDaoTargetFolder());
 
-
         context.setId("myid");
         context.addTableConfiguration(tableConfig);
         context.setJdbcConnectionConfiguration(jdbcConfig);
         context.setJavaModelGeneratorConfiguration(modelConfig);
         context.setSqlMapGeneratorConfiguration(mapperConfig);
         context.setJavaClientGeneratorConfiguration(daoConfig);
+
         // Comment
         CommentGeneratorConfiguration commentConfig = new CommentGeneratorConfiguration();
         commentConfig.setConfigurationType(DbRemarksCommentGenerator.class.getName());
@@ -172,10 +193,10 @@ public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
         context.addProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING, generatorConfig.getEncoding());
 
         //实体添加序列化
-        PluginConfiguration serializablePluginConfiguration = new PluginConfiguration();
-        serializablePluginConfiguration.addProperty("type", "org.mybatis.generator.plugins.SerializablePlugin");
-        serializablePluginConfiguration.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
-        context.addPluginConfiguration(serializablePluginConfiguration);
+//        PluginConfiguration serializablePluginConfiguration = new PluginConfiguration();
+//        serializablePluginConfiguration.addProperty("type", "org.mybatis.generator.plugins.SerializablePlugin");
+//        serializablePluginConfiguration.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
+//        context.addPluginConfiguration(serializablePluginConfiguration);
 
         // Lombok 插件
         if (generatorConfig.isUseLombokPlugin()) {
@@ -186,14 +207,14 @@ public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
         }
         // toString, hashCode, equals插件
         else if (generatorConfig.isNeedToStringHashcodeEquals()) {
-            PluginConfiguration pluginConfiguration1 = new PluginConfiguration();
-            pluginConfiguration1.addProperty("type", "org.mybatis.generator.plugins.EqualsHashCodePlugin");
-            pluginConfiguration1.setConfigurationType("org.mybatis.generator.plugins.EqualsHashCodePlugin");
-            context.addPluginConfiguration(pluginConfiguration1);
-            PluginConfiguration pluginConfiguration2 = new PluginConfiguration();
-            pluginConfiguration2.addProperty("type", "org.mybatis.generator.plugins.ToStringPlugin");
-            pluginConfiguration2.setConfigurationType("org.mybatis.generator.plugins.ToStringPlugin");
-            context.addPluginConfiguration(pluginConfiguration2);
+//            PluginConfiguration pluginConfiguration1 = new PluginConfiguration();
+//            pluginConfiguration1.addProperty("type", "org.mybatis.generator.plugins.EqualsHashCodePlugin");
+//            pluginConfiguration1.setConfigurationType("org.mybatis.generator.plugins.EqualsHashCodePlugin");
+//            context.addPluginConfiguration(pluginConfiguration1);
+//            PluginConfiguration pluginConfiguration2 = new PluginConfiguration();
+//            pluginConfiguration2.addProperty("type", "org.mybatis.generator.plugins.ToStringPlugin");
+//            pluginConfiguration2.setConfigurationType("org.mybatis.generator.plugins.ToStringPlugin");
+//            context.addPluginConfiguration(pluginConfiguration2);
         }
         // limit/offset插件
         if (generatorConfig.isOffsetLimit()) {
@@ -249,6 +270,7 @@ public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
         Set<String> contexts = new HashSet<>();
         ShellCallback shellCallback = new DefaultShellCallback(true); // override=true
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
+        this.myBatisGenerator = myBatisGenerator;
         // if overrideXML selected, delete oldXML ang generate new one
         if (generatorConfig.isOverrideXML()) {
             String mappingXMLFilePath = getMappingXMLFilePath(generatorConfig);
@@ -275,5 +297,17 @@ public class MekMybatisGeneratorBridge extends MybatisGeneratorBridge {
         }
 
         return sb.toString();
+    }
+
+    public void setProgressCallback(ProgressCallback progressCallback) {
+        this.progressCallback = progressCallback;
+    }
+
+    public void setIgnoredColumns(List<IgnoredColumn> ignoredColumns) {
+        this.ignoredColumns = ignoredColumns;
+    }
+
+    public void setColumnOverrides(List<ColumnOverride> columnOverrides) {
+        this.columnOverrides = columnOverrides;
     }
 }
